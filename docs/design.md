@@ -66,3 +66,21 @@ it opens a loophole where users can abandon a losing game before it concludes to
 
 However, since strict anti-cheat tracking is not currently required, 
 this remains a worthwhile optimization.
+
+## What changed and why
+
+Two additions to the `games` table that the original design did not mention.
+
+**`user_id` deletes with its user: `references auth.users (id) on delete cascade`.**
+A game only means something to the person who played it. Without `on delete cascade`,
+Postgres would refuse to delete a user account while that user still had saved games,
+so deleting an account would first need a separate step to clear their history.
+With it, deleting the user removes their games in the same step, and no game is ever
+left pointing at a user who no longer exists.
+
+**An index on `(user_id, created_at desc)`.**
+`GET /api/games` runs exactly one query: this user's games, newest first. Without an
+index, Postgres has to read every row of `games` and sort the matches on every request,
+which gets slower as more games are saved by everyone. The index stores the rows already
+grouped by user and sorted by date, so the query reads only the requesting user's rows,
+already in the order the page shows them.

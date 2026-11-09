@@ -24,6 +24,7 @@ import styles from "./Layout.module.css";
  * https://reactrouter.com/start/declarative/routing#layout-routes
  */
 export function Layout() {
+  const { user } = useAuth();
   return (
     <div className={styles.shell}>
       <header className={styles.header}>
@@ -32,6 +33,7 @@ export function Layout() {
         </Link>
         <nav className={styles.nav}>
           <Link to="/">Home</Link>
+          {user ? <Link to="/tic-tac-toe">Tic-tac-toe</Link> : null}
           <a href={COURSE_GITHUB} target="_blank" rel="noreferrer">
             GitHub
           </a>
