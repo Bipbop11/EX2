@@ -6,6 +6,27 @@ import styles from "./HomePage.module.css";
 
 type Me = { id: string; email: string };
 
+const PROJECTS = [
+  {
+    to: "/tic-tac-toe",
+    title: "Tic-Tac-Toe",
+    text: "A 4x4 tic-tac-toe game with saved game history.",
+    needsLogin: true,
+  },
+  {
+    to: "/nasa",
+    title: "NASA API",
+    text: "NASA's Astronomy Picture of the Day, explained in Hebrew.",
+    needsLogin: true,
+  },
+  {
+    to: "/design",
+    title: "Responsive Design",
+    text: "The SPLASH landing page, built 1:1 from Figma for every screen size.",
+    needsLogin: false,
+  },
+] as const;
+
 /**
  * The home page. Replace all of this with your own app.
  *
@@ -54,24 +75,23 @@ export default function HomePage() {
         </>
       ) : null}
 
-      <h2>Lorem Ipsum</h2>
-      <p>
-        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec faucibus
-        sit amet nunc nec vehicula. Fusce ornare nec nulla non imperdiet. Fusce
-        vel sodales justo. Sed efficitur arcu lorem, at iaculis odio ultricies
-        et. Duis rutrum urna nec elit bibendum, sed hendrerit nulla posuere.
-        Vestibulum vestibulum, ante non tincidunt posuere, dui arcu lacinia
-        nisl, nec rhoncus massa arcu ac ipsum. Nam congue interdum tortor, eu
-        dignissim massa scelerisque vitae.
-      </p>
-      <ul>
-        <li>
-          Aliquam maximus tellus sed lacus venenatis, ac cursus eros mollis.
-        </li>
-        <li>In id ante sed sem pharetra molestie et vitae arcu.</li>
-        <li>Cras pharetra turpis at pretium elementum.</li>
-        <li>Donec ultrices felis vel lectus auctor iaculis.</li>
-      </ul>
+      <h2>Projects</h2>
+      <nav aria-label="Projects">
+        <ul className={styles.projects}>
+          {PROJECTS.map((project) => (
+            <li key={project.to}>
+              <Link to={project.to} className={styles.project}>
+                <span className={styles.projectTitle}>{project.title}</span>
+                <span className={styles.projectText}>{project.text}</span>
+                <span className={styles.projectMeta}>
+                  {project.to}
+                  {project.needsLogin ? " · sign-in required" : ""}
+                </span>
+              </Link>
+            </li>
+          ))}
+        </ul>
+      </nav>
     </main>
   );
 }
