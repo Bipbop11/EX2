@@ -84,3 +84,61 @@ index, Postgres has to read every row of `games` and sort the matches on every r
 which gets slower as more games are saved by everyone. The index stores the rows already
 grouped by user and sorted by date, so the query reads only the requesting user's rows,
 already in the order the page shows them.
+
+**NASA's new APOD endpoint: `science.nasa.gov/wp-json/wp/v2/apod-basic`.**
+Since September, `api.nasa.gov/planetary/apod` doesn't work as documented: with `count`
+it answers placeholder "NASA Science" pictures, with `date` it often answers today's
+explanation, and some requests fail or never answer. The new endpoint needs no API key,
+answers a list of pictures newest first, takes `page` and `per_page` (at most 25), and
+says how many pictures there are in the `X-WP-Total` header. One picture is
+`apod-basic/YYMMDD`, which answers 404 if there is no picture on that date. The server
+asks only for the fields it uses (`_fields=...`), because a full answer includes a large
+HTML page per picture (about 300 KB for 25 pictures). `NASA_API_KEY` is no longer used.
+
+**`GET /api/pictures` no longer takes `page`.**
+The page shows random pictures, and a "page" of random results means nothing. The server
+picks a random page between 1 and `X-WP-Total / 25` and fetches it. The total is kept in
+memory for a few hours, since it only grows by one a day. The pictures are random as a
+batch, but come from consecutive days: picking each picture separately at random would
+take one call to NASA per picture. The "More pictures" button just asks again.
+
+**`GET /api/pictures` answers clean text, not the raw explanation.**
+NASA's explanation is HTML: it starts with `<strong>Explanation:</strong>`, is full of
+links, and often ends with extra paragraphs such as "Tomorrow's picture: ..." after a
+blank line. The server cleans it once (`server/lib/html.ts`): it keeps the text up to the
+first blank line, removes the tags and the "Explanation:" label, and decodes entities.
+The same cleaning is used before the text goes to Gemini. Cleaning on the server means
+the browser never has to render HTML that came from another site.
+
+**Videos are left out, and every batch is exactly 18 images.**
+About 1 in 12 APOD entries is a video, and for those NASA's `hdurl` is a generic NASA
+placeholder, not the picture. To leave them out and still always answer the same number of
+pictures, the server overfetches: it asks NASA for 25 pictures (NASA's maximum: asking for
+more, such as 30, quietly still answers 25), keeps only the images, and answers the first
+18. A page of 25 has about 23 images, so one call is almost always enough. In the rare page
+with 8 or more videos, the server reads the following page too and fills the batch up to
+18, reading at most 4 pages and wrapping round to the first page after the last one. If
+NASA fails during a top-up, the images already found are returned rather than an error.
+Entries NASA sends in an unexpected shape (some old ones have no `media_type`) are skipped
+one by one instead of failing the whole page, and a picture that shows up twice (NASA
+published a new one between two calls) is kept once.
+
+**`GET /api/pictures` also reads `apod_explanations`.**
+The design said this endpoint touches no tables. It now looks up the batch's dates in
+`apod_explanations` and attaches any saved Hebrew explanation, so a picture that anyone
+already explained shows its Hebrew as soon as the page loads, at no extra cost. If that
+lookup fails, the pictures are still returned, just without Hebrew. Each picture also
+carries `id` (its date as `YYMMDD`, to ask `/api/explanations/:date` for) and NASA's
+`alt` text, for screen readers.
+
+**The `tags` check in `apod_explanations`.**
+`jsonb_array_length` raises an error, rather than returning false, when `tags` isn't an
+array, so the check is wrapped in `case when jsonb_typeof(tags) = 'array' ...`. The
+`date` column also checks that it is six digits.
+
+**Paying twice is still possible in one rare case.**
+If two people ask for the same unexplained picture at the same moment, both requests miss
+the cache and both call Gemini. Only the first answer is saved (the `date` primary key
+refuses the second), and both people get the saved one. Preventing the second Gemini call
+would need a "pending" row and a way to clean up stuck ones; for one extra call in a rare
+race, it isn't worth it.

@@ -4,9 +4,11 @@ import type { AppEnv } from "./env";
 import { fail } from "./lib/errors";
 import { requireAuth } from "./middleware/auth";
 import { events } from "./routes/events";
+import { explanations } from "./routes/explanations";
 import { games } from "./routes/games";
 import { health } from "./routes/health";
 import { me } from "./routes/me";
+import { pictures } from "./routes/pictures";
 import { uploads } from "./routes/uploads";
 
 /**
@@ -33,6 +35,8 @@ app.use("/api/*", requireAuth);
 app.route("/api/me", me);
 app.route("/api/events", events);
 app.route("/api/games", games);
+app.route("/api/pictures", pictures);
+app.route("/api/explanations", explanations);
 app.route("/api/uploads", uploads);
 
 // Any /api/* URL we did not define above. Without this, an unknown API URL
