@@ -99,10 +99,12 @@ describe("winning", () => {
 });
 
 describe("draw", () => {
-  // X O X O
-  // X O X O
-  // O X O X
-  // O X O X
+  /*
+   * X O X O
+   * X O X O
+   * O X O X
+   * O X O X
+   */
   const draw = [0, 1, 2, 3, 4, 5, 6, 7, 9, 8, 11, 10, 13, 12, 15, 14];
 
   it("is a draw when the board fills with no row", () => {

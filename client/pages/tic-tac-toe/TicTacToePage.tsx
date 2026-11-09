@@ -25,10 +25,13 @@ export default function TicTacToePage() {
 
   function handleCell(cell: number) {
     const result = play(game, cell);
-    if (!result.ok) return; // The button is disabled, so this shouldn't happen.
+    /* The button is disabled, so this shouldn't happen. */
+    if (!result.ok) return;
     setGame(result.state);
-    // Save the moment the game ends. Done here rather than in an effect, so
-    // it runs exactly once per game.
+    /*
+     * Save the moment the game ends. Done here rather than in an effect, so
+     * it runs exactly once per game.
+     */
     if (result.state.status.kind !== "playing") {
       saveGame.mutate({ moves: [...result.state.moves] });
     }
@@ -153,7 +156,7 @@ function SaveState({
       </p>
     );
   }
-  // Keeps "New game" in the same place whether or not there's a note.
+  /* Keeps "New game" in the same place whether or not there's a note. */
   return <span />;
 }
 

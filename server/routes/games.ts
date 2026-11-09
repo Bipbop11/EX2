@@ -15,7 +15,7 @@ const COLUMNS = "id, result, created_at";
 
 export const games = new Hono<AppEnv>()
 
-  // GET /api/games - the logged-in user's games, newest first.
+  /* GET /api/games - the logged-in user's games, newest first. */
   .get("/", async (c) => {
     const { data, error } = await createAdminClient(c.env)
       .from("games")
@@ -30,9 +30,11 @@ export const games = new Hono<AppEnv>()
     return c.json(data);
   })
 
-  // POST /api/games - save a finished game. The body is only the moves; we
-  // replay them with the shared rules and save only the result WE calculated
-  // (the moves themselves are not stored - see "One trade-off" in the design).
+  /*
+   * POST /api/games - save a finished game. The body is only the moves; we
+   * replay them with the shared rules and save only the result WE calculated
+   * (the moves themselves are not stored - see "One trade-off" in the design).
+   */
   .post("/", validate("json", saveGameSchema), async (c) => {
     const { moves } = c.req.valid("json");
 
@@ -58,7 +60,7 @@ export const games = new Hono<AppEnv>()
 
     const { data, error } = await createAdminClient(c.env)
       .from("games")
-      // user_id comes from the verified token, never from the request body.
+      /* user_id comes from the verified token, never from the request body. */
       .insert({ user_id: c.get("user").id, result })
       .select(COLUMNS)
       .single();

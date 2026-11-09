@@ -23,7 +23,7 @@ export function useSaveGame() {
     mutationFn: (input: SaveGameInput) =>
       api<Game>("/api/games", { method: "POST", body: input }),
     onSuccess: () => {
-      // The list below the board is now missing this game - fetch it again.
+      /* The list below the board is now missing this game - fetch it again. */
       void queryClient.invalidateQueries({ queryKey: gameKeys.all });
     },
   });

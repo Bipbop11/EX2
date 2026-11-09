@@ -67,10 +67,10 @@ export type GameResult = Player | "draw";
  */
 export const LINES: readonly (readonly number[])[] = (() => {
   const directions = [
-    [0, 1], // across
-    [1, 0], // down
-    [1, 1], // diagonal, down to the right
-    [1, -1], // diagonal, down to the left
+    /* across */ [0, 1],
+    /* down */ [1, 0],
+    /* diagonal, down to the right */ [1, 1],
+    /* diagonal, down to the left */ [1, -1],
   ] as const;
   const lines: number[][] = [];
   for (let row = 0; row < SIZE; row++) {
