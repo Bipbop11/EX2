@@ -65,6 +65,7 @@ export function App() {
                   <Routes>
                     {/* Full-screen pages, without the header and footer. */}
                     <Route path="/signin" element={<SignInPage />} />
+                    <Route path="/design" element={<DesignPage />} />
                     <Route
                       path="/auth/callback"
                       element={<AuthCallbackPage />}
@@ -74,7 +75,6 @@ export function App() {
                     client/pages/Layout.tsx. */}
                     <Route element={<Layout />}>
                       <Route path="/" element={<HomePage />} />
-                      <Route path="/design" element={<DesignPage />} />
 
                       {/* Everything in here needs a login. */}
                       <Route element={<RequireAuth />}>

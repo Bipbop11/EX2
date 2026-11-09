@@ -1,3 +1,461 @@
-.title {
-  font-size: var(--text-3xl);
+/*
+  Built from two Figma frames: mobile (440px wide) and Desktop (1440px wide).
+
+  Every size uses the same pattern so it scales smoothly between them:
+    clamp(MOBILE, MOBILE + (DESKTOP - MOBILE) * var(--p), DESKTOP)
+  where --p grows by 1px for every 1000px the page is wider than 440px,
+  so the value is exactly MOBILE at 440px and exactly DESKTOP at 1440px.
+  (For values that shrink, the two clamp bounds swap places.)
+
+  The layout itself switches from the mobile arrangement to the desktop one
+  at 1024px, measured on the page with a container query.
+*/
+
+@font-face {
+  font-family: "Fedra Sans HL";
+  src: url("/fonts/FedraSansPro_HL-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "TheBasics";
+  src: url("/fonts/TheBasics-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+.page {
+  --blue: #395da9;
+  --cream: #fdf0cd;
+  --yellow: #feb706;
+  --red: #f64513;
+  --sky: #d5e8ff;
+  --pink: #ed9caf;
+  --font-display: "Fedra Sans HL", "Rubik", system-ui, sans-serif;
+  --font-text: "TheBasics", "Rubik", system-ui, sans-serif;
+  --p: calc((100cqi - 440px) / 1000);
+
+  max-width: none;
+  margin: 0;
+  padding: 0;
+  container-type: inline-size;
+  overflow-x: clip;
+  background-color: var(--blue);
+  color: var(--cream);
+  font-family: var(--font-text);
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+.page :where(h1, h2, p, ul, li) {
+  margin: 0;
+  padding: 0;
+  text-wrap: wrap;
+}
+
+.page :where(ul) {
+  list-style: none;
+}
+
+.page img {
+  display: block;
+}
+
+/* === SPLASH LOGO ========================================================= */
+
+.logo {
+  display: flex;
+  justify-content: center;
+  gap: var(--logo-gap, 18px);
+  height: var(--logo-h);
+}
+
+.logo svg {
+  flex-shrink: 0;
+  height: 100%;
+  width: auto;
+}
+
+/* === BEAD DIVIDER ======================================================== */
+
+.divider {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding-inline: 18px;
+}
+
+.divider::before {
+  content: "";
+  position: absolute;
+  inset-inline: 18px;
+  top: 50%;
+  height: 3px;
+  transform: translateY(-50%);
+  background-color: var(--line);
+}
+
+.dividerCell {
+  position: relative;
+  display: flex;
+  flex: 1;
+  justify-content: center;
+}
+
+.beadGroup {
+  display: block;
+  width: min(clamp(382px, 382px + 71 * var(--p), 453px), 100% - 22px);
+  height: auto;
+}
+
+/* === HERO ================================================================ */
+
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: clamp(33px, 33px + 16 * var(--p), 49px) clamp(33px, 33px + 5 * var(--p), 38px);
+  text-align: center;
+}
+
+.heroLogo,
+.footerLogo {
+  --logo-h: min(clamp(121px, 121px + 37 * var(--p), 158px), 27.5cqi);
+  --logo-gap: min(18px, 4.09cqi);
+}
+
+.heroDivider {
+  margin-block-start: clamp(40px, 40px + 13 * var(--p), 53px);
+}
+
+.equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 29px;
+  margin-block-start: clamp(38px, 39px - 1 * var(--p), 39px);
+  min-height: clamp(72px, 72px + 72 * var(--p), 144px);
+}
+
+.equationTitle {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 30px + 30 * var(--p), 60px);
+  line-height: 1.2;
+  text-align: start;
+}
+
+.equationTitleTop {
+  display: block;
+  font-size: clamp(30px, 30px + 20 * var(--p), 50px);
+}
+
+.wolt {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(48px, 48px + 48 * var(--p), 96px);
+  line-height: 1.2;
+}
+
+.equals {
+  display: flex;
+  flex-direction: column;
+  gap: clamp(4px, 4px + 1 * var(--p), 5px);
+}
+
+.equals span {
+  display: block;
+  width: clamp(23px, 23px + 10 * var(--p), 33px);
+  height: clamp(6px, 6px + 3 * var(--p), 9px);
+  background-color: var(--cream);
+}
+
+.heroText {
+  max-width: clamp(340px, 340px + 562 * var(--p), 902px);
+  margin-block-start: clamp(0px, 13 * var(--p), 13px);
+  padding-inline: 16px;
+  box-sizing: content-box;
+  font-size: clamp(18px, 18px + 10 * var(--p), 28px);
+}
+
+/* === STOP! =============================================================== */
+
+.stop {
+  padding-block: clamp(3px, 3px + 49 * var(--p), 52px) clamp(12.8px, 17px - 4.2 * var(--p), 17px);
+  padding-inline: clamp(22px, 22px + 7 * var(--p), 29px);
+  background-color: var(--red);
+}
+
+.stopWords {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  max-width: 1382px;
+  margin-inline: auto;
+}
+
+.stopWords img {
+  width: min(397px, 100%);
+  height: auto;
+}
+
+.stopText {
+  padding-block-start: clamp(0px, 12.8 * var(--p), 12.8px);
+  color: var(--yellow);
+  font-size: clamp(18px, 18px + 4 * var(--p), 22px);
+  text-align: center;
+}
+
+/* === PROBLEMS ============================================================ */
+
+.problems {
+  padding-block: clamp(12px, 12px + 51 * var(--p), 63px) clamp(21px, 21px + 93 * var(--p), 114px);
+  text-align: center;
+}
+
+.kicker {
+  font-size: clamp(18px, 18px + 4 * var(--p), 22px);
+}
+
+.problemsTitle {
+  margin-block: 4px clamp(33px, 33px + 16 * var(--p), 49px);
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(30px, 30px + 20 * var(--p), 50px);
+  line-height: 1.2;
+}
+
+.rings {
+  --ring: min(clamp(158px, 158px + 82 * var(--p), 240px), 35.9cqi);
+  --gap: min(clamp(61px, 61px + 51 * var(--p), 112px), 13.86cqi);
+
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  column-gap: var(--gap);
+  row-gap: 23px;
+  max-width: calc(2 * var(--ring) + var(--gap));
+  margin-inline: auto;
+}
+
+.ring {
+  position: relative;
+  width: var(--ring);
+}
+
+.ring img {
+  width: 100%;
+  height: auto;
+}
+
+.ring > span {
+  position: absolute;
+  inset-inline: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  text-align: center;
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: clamp(24px, 24px + 6 * var(--p), 30px);
+  line-height: 1.2;
+}
+
+/* === ABOUT =============================================================== */
+
+.about {
+  padding-block: clamp(32px, 32px + 9 * var(--p), 41px) clamp(32px, 32px + 7 * var(--p), 39px);
+  background-color: var(--cream);
+  color: var(--blue);
+  text-align: center;
+}
+
+.aboutKicker,
+.aboutLead {
+  padding-inline: 26px;
+  font-size: clamp(18px, 18px + 4 * var(--p), 22px);
+}
+
+.aboutLogo {
+  --logo-h: min(clamp(89px, 89px + 35 * var(--p), 124px), 20.2cqi);
+  --logo-gap: 8px;
+
+  margin-block-start: clamp(7px, 7px + 36 * var(--p), 43px);
+}
+
+.aboutLead {
+  margin-block-start: clamp(18px, 18px + 26 * var(--p), 44px);
+}
+
+.aboutDivider {
+  margin-block-start: clamp(22px, 22px + 16 * var(--p), 38px);
+}
+
+.columns {
+  max-width: 720px;
+  margin-inline: auto;
+  margin-block-start: clamp(22px, 22px + 17 * var(--p), 39px);
+  padding-inline: clamp(18px, 18px + 33 * var(--p), 51px);
+  font-size: clamp(18px, 18px + 4 * var(--p), 22px);
+  text-align: start;
+}
+
+.colWolt {
+  margin-block-end: 22px;
+}
+
+.colSplash,
+.colPromise {
+  display: inline;
+}
+
+/* === FEATURES ============================================================ */
+
+.features {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+}
+
+.feature {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  order: var(--order);
+  height: clamp(165px, 165px + 54 * var(--p), 219px);
+  padding: 10px;
+}
+
+.feature p {
+  max-width: clamp(147px, 147px + (var(--wd) - 147) * var(--p), var(--wd) * 1px);
+  font-size: clamp(18px, 18px + 4 * var(--p), 22px);
+  text-align: center;
+}
+
+.red {
+  background-color: var(--red);
+  color: var(--cream);
+}
+
+.yellow {
+  background-color: var(--yellow);
+  color: var(--red);
+}
+
+.sky {
+  background-color: var(--sky);
+  color: var(--red);
+}
+
+.pink {
+  background-color: var(--pink);
+  color: var(--cream);
+}
+
+/* === FOOTER ============================================================== */
+
+.footer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding-block: clamp(40px, 40px + 66 * var(--p), 106px) clamp(40px, 40px + 54 * var(--p), 94px);
+}
+
+.team {
+  --name-gap: clamp(5px, 5px + 4 * var(--p), 9px);
+
+  display: flex;
+  justify-content: center;
+  gap: var(--name-gap);
+  margin-block-start: clamp(24px, 24px + 23 * var(--p), 47px);
+  font-size: clamp(18px, 18px + 4 * var(--p), 22px);
+}
+
+.team li {
+  display: flex;
+  align-items: center;
+  gap: var(--name-gap);
+}
+
+/* === DESKTOP LAYOUT (1024px and wider) =================================== */
+
+@container (min-width: 1024px) {
+  .divider {
+    padding-inline: 0;
+  }
+
+  .divider::before {
+    inset-inline: 0;
+  }
+
+  .beadGroup {
+    width: min(453px, 100% - 26px);
+  }
+
+  .stopWords {
+    flex-direction: row;
+    justify-content: space-between;
+    gap: 39px;
+  }
+
+  .stopWords img {
+    flex: 0 1 397px;
+    min-width: 0;
+    width: 397px;
+  }
+
+  .rings {
+    flex-wrap: nowrap;
+    max-width: none;
+  }
+
+  .columns {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 371px));
+    justify-content: space-between;
+    column-gap: 48px;
+    max-width: 1440px;
+    min-height: 172px;
+  }
+
+  .columns p {
+    display: block;
+    grid-row: 1;
+    margin: 0;
+  }
+
+  .colSplash {
+    grid-column: 1;
+  }
+
+  .colPromise {
+    grid-column: 2;
+  }
+
+  .colWolt {
+    grid-column: 3;
+  }
+
+  .features {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .feature {
+    order: 0;
+  }
+}
+
+/* === SHOW / HIDE BY LAYOUT =============================================== */
+
+@container (max-width: 1023.98px) {
+  .page .wideOnly {
+    display: none;
+  }
+}
+
+@container (min-width: 1024px) {
+  .page .narrowOnly {
+    display: none;
+  }
 }
