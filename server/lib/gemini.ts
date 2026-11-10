@@ -129,6 +129,6 @@ export function geminiErrorMessage(error: GeminiError): string {
     case "unavailable":
       return "The Hebrew explanation service isn't working right now. Please try again in a few minutes.";
     case "invalid_answer":
-      return "Gemini's explanation didn't come out right, so we didn't save it. Please try again.";
+      return "We're sorry, Gemini's explanation didn't come out right. Please try again.";
   }
 }
