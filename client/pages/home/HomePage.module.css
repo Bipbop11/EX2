@@ -17,7 +17,11 @@
 */
 
 .home {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
   max-width: none;
+  margin: 0;
   padding: 0;
 }
 
@@ -27,6 +31,7 @@
   --press: rgb(0 0 0 / 0.9);
 
   display: flex;
+  flex: 1;
   min-block-size: clamp(30rem, 78vh, 52rem);
 }
 
@@ -138,7 +143,7 @@
   --left-edge: 40px;
 
   padding-inline-end: calc(var(--d) * 0.6 + var(--g) + 1.5rem);
-  background-image: url("/images/image_f69038e.jpg");
+  background-image: url("/images/new_tic_tac_toe.jpg");
   background-position: 50% 80%;
 }
 

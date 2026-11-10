@@ -35,6 +35,7 @@ export function Layout() {
           <Link to="/">Home</Link>
           {user ? <Link to="/tic-tac-toe">Tic-tac-toe</Link> : null}
           {user ? <Link to="/nasa">Space pictures</Link> : null}
+          <Link to="/design">Responsive design</Link>
           <a href={COURSE_GITHUB} target="_blank" rel="noreferrer">
             GitHub
           </a>
@@ -56,7 +57,6 @@ export function Layout() {
       </div>
 
       <footer className={styles.footer}>
-        <p>This is some example footer content.</p>
         <p>
           <AuthAction /> | {COURSE_CREDITS}
         </p>

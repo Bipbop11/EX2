@@ -11,7 +11,7 @@ import styles from "./HomePage.module.css";
  */
 export default function HomePage() {
   return (
-    <main className={styles.home}>
+    <main className={styles.home} data-fill-height>
       <nav className={styles.panels} aria-label="Projects">
         <Link
           to="/tic-tac-toe"
@@ -27,14 +27,14 @@ export default function HomePage() {
         <Link to="/nasa" className={`${styles.panel} ${styles.space}`}>
           <PressShadow />
           <h2 className={styles.title}>Space images</h2>
-          <p className={styles.text}>Get inspired with the vastnes of space</p>
+          <p className={styles.text}>Get inspired by the vastness of space</p>
         </Link>
 
         <Link to="/design" className={`${styles.panel} ${styles.design}`}>
           <PressShadow />
           <h2 className={styles.title}>Responsive design</h2>
           <p className={styles.text}>
-            Get creative wit a <StretchyWord /> design
+            Get creative with a <StretchyWord /> design
           </p>
         </Link>
       </nav>
