@@ -1,57 +1,247 @@
-.logos {
-  display: flex;
-  gap: var(--space-4);
-  margin-block: var(--space-4);
-}
+/*
+  Three panels in a row, cut along parallel diagonals with clip-path.
 
-.projects {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
-  gap: var(--space-4);
-  margin-block: var(--space-4);
+  --d is how far each diagonal leans: the horizontal distance between its
+  top and its bottom. It shrinks as the screen gets narrower, so the lines
+  stand up steeper and steeper, until at 640px they are vertical. Below that
+  the panels stack, and the diagonals are gone.
+
+  --g is the gap between two panels, where the page background shows through
+  like the double line in the sketch.
+
+  Each panel's box overlaps its neighbour by --d, and clip-path cuts away
+  the overlap. A panel's visible shape is written once, as its four corners
+  in --p1 to --p4, and used both to cut the panel and to draw its pressed
+  shadow. clip-path only knows left and right, so this is the one place in
+  the app that uses physical directions.
+*/
+
+.home {
+  max-width: none;
   padding: 0;
-  list-style: none;
 }
 
-.project {
+.panels {
+  --d: clamp(0px, (100vw - 640px) * 0.3, 260px);
+  --g: 10px;
+  --press: rgb(0 0 0 / 0.9);
+
   display: flex;
+  min-block-size: clamp(30rem, 78vh, 52rem);
+}
+
+.panel {
+  --p1: 0 0;
+  --p2: 100% 0;
+  --p3: 100% 100%;
+  --p4: 0 100%;
+
+  position: relative;
+  display: flex;
+  flex: 1 1 0;
   flex-direction: column;
-  gap: var(--space-2);
-  block-size: 100%;
-  padding: var(--space-4);
-  border: var(--border-width) solid var(--color-border);
-  border-radius: var(--radius-lg);
-  background-color: var(--color-surface);
-  color: var(--color-text);
+  gap: clamp(2.5rem, 8vh, 6rem);
+  padding-block: clamp(2rem, 6vh, 4rem);
+  padding-inline: clamp(1.25rem, 2.5vw, 2.5rem);
+  background-position: center;
+  background-size: cover;
+  color: #ffffff;
   text-decoration: none;
+  text-shadow:
+    0 1px 2px rgb(0 0 0 / 0.6),
+    0 2px 12px rgb(0 0 0 / 0.45);
+  clip-path: polygon(var(--p1), var(--p2), var(--p3), var(--p4));
+  box-shadow:
+    inset 0 0 0 0 transparent,
+    inset 0 0 0 0 transparent,
+    inset 0 0 0 0 transparent,
+    inset 0 0 0 0 transparent;
   transition:
-    border-color var(--duration-fast) var(--ease-out),
-    background-color var(--duration-fast) var(--ease-out);
+    clip-path 0.4s var(--ease-out),
+    box-shadow 0.3s var(--ease-out),
+    padding 0.4s var(--ease-out);
 }
 
-.project:hover {
-  border-color: var(--color-accent);
-  background-color: var(--color-surface-hover);
+.panel > * {
+  position: relative;
+  transition: transform 0.3s var(--ease-out);
 }
 
-.project:focus-visible {
-  outline: var(--focus-ring-width) solid var(--color-accent);
-  outline-offset: var(--focus-ring-offset);
+/*
+  Pressed in. The inset box-shadow darkens the inside of the panel's
+  straight edges, deepest along the top as if the rim casts it, and the
+  content drops a few pixels.
+*/
+.panel:hover,
+.panel:focus-visible {
+  color: #ffffff;
+  box-shadow:
+    inset 0 40px 50px -16px var(--press),
+    inset 0 -24px 40px -16px var(--press),
+    inset var(--left-edge, 0) 0 50px -16px var(--press),
+    inset var(--right-edge, 0) 0 50px -16px var(--press);
 }
 
-.projectTitle {
+.panel:hover > :not(.press),
+.panel:focus-visible > :not(.press) {
+  transform: translateY(4px) scale(0.98);
+}
+
+.panel:focus-visible {
+  outline: none;
+}
+
+/*
+  The box-shadow can only follow the panel's rectangular box, but the
+  diagonal edges are cut out of that box. So the pressed shadow along the
+  diagonals is drawn separately: a black shape covering exactly what the
+  diagonals cut off (the whole box minus the visible shape), blurred so the
+  dark bleeds in across the edge. The panel's own clip-path hides the part
+  that spills outside.
+*/
+.press {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  filter: blur(22px);
+  transition: opacity 0.3s var(--ease-out);
+}
+
+.press > span {
+  position: absolute;
+  inset: 0;
+  background-color: #000000;
+  clip-path: polygon(
+    evenodd,
+    0 0,
+    100% 0,
+    100% 100%,
+    0 100%,
+    0 0,
+    var(--p1),
+    var(--p2),
+    var(--p3),
+    var(--p4),
+    var(--p1)
+  );
+}
+
+.panel:hover > .press,
+.panel:focus-visible > .press {
+  opacity: 1;
+}
+
+.ticTacToe {
+  --p2: calc(100% - var(--g) / 2) 0;
+  --p3: calc(100% - var(--d) - var(--g) / 2) 100%;
+  --left-edge: 40px;
+
+  padding-inline-end: calc(var(--d) * 0.6 + var(--g) + 1.5rem);
+  background-image: url("/images/image_f69038e.jpg");
+  background-position: 50% 80%;
+}
+
+.space {
+  --p1: calc(var(--d) + var(--g) / 2) 0;
+  --p2: calc(100% - var(--g) / 2) 0;
+  --p3: calc(100% - var(--d) - var(--g) / 2) 100%;
+  --p4: calc(var(--g) / 2) 100%;
+
+  flex-basis: calc(var(--d) / 2);
+  margin-inline-start: calc(-1 * var(--d));
+  padding-inline: calc(var(--d) + var(--g) + 1.5rem) calc(var(--d) * 0.6 + var(--g) + 1.5rem);
+  background-image: url("/images/Gemini_Generated_Image_t5df65t5df65t5df.jfif");
+}
+
+.design {
+  --p1: calc(var(--d) + var(--g) / 2) 0;
+  --p4: calc(var(--g) / 2) 100%;
+  --right-edge: -40px;
+
+  margin-inline-start: calc(-1 * var(--d));
+  padding-inline-start: calc(var(--d) + var(--g) + 1.5rem);
+  background-image: url("/images/Gemini_Generated_Image_bqdg9vbqdg9vbqdg.jfif");
+}
+
+.title {
+  margin: 0;
+  color: #ffffff;
   font-family: var(--font-titles);
-  font-size: var(--text-lg);
+  font-size: clamp(1.6rem, 1rem + 1.6vw, 2.75rem);
   font-weight: 500;
-  color: var(--color-accent);
+  line-height: 1.15;
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 0.3em;
+  text-wrap: balance;
 }
 
-.projectText {
-  flex: 1;
+/* Never split "TiC-TAC-Toe" at its hyphens. */
+.ticTacToe .title {
+  white-space: nowrap;
 }
 
-.projectMeta {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: var(--color-text-muted);
+.text {
+  margin: 0;
+  font-size: clamp(1.15rem, 0.8rem + 1vw, 1.75rem);
+  line-height: 1.5;
+}
+
+/* === THE STRETCHY WORD =================================================== */
+
+.stretchy {
+  font-size: 1.5em;
+  white-space: nowrap;
+}
+
+.stretchy [aria-hidden] span {
+  display: inline-block;
+  margin-inline: calc((var(--sx) - 1) * 0.22em);
+  transform: scaleX(var(--sx));
+}
+
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* === PHONES: three stacked rectangles ==================================== */
+
+@media (max-width: 640px) {
+  .panels {
+    flex-direction: column;
+    gap: var(--g);
+    min-block-size: 0;
+  }
+
+  .panel,
+  .ticTacToe,
+  .space,
+  .design {
+    --p1: 0 0;
+    --p2: 100% 0;
+    --p3: 100% 100%;
+    --p4: 0 100%;
+    --left-edge: 40px;
+    --right-edge: -40px;
+
+    flex: none;
+    min-block-size: clamp(16rem, 34vh, 22rem);
+    margin: 0;
+    padding: 2rem 1.5rem;
+    gap: 1.5rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel,
+  .panel > *,
+  .press {
+    transition: none;
+  }
 }

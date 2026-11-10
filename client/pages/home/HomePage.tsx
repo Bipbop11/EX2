@@ -1,97 +1,89 @@
-import { useQuery } from "@tanstack/react-query";
+import type { CSSProperties } from "react";
 import { Link } from "react-router";
-import { api } from "../../lib/api";
-import { useAuth } from "../../lib/auth";
 import styles from "./HomePage.module.css";
 
-type Me = { id: string; email: string };
-
-const PROJECTS = [
-  {
-    to: "/tic-tac-toe",
-    title: "Tic-Tac-Toe",
-    text: "A 4x4 tic-tac-toe game with saved game history.",
-    needsLogin: true,
-  },
-  {
-    to: "/nasa",
-    title: "NASA API",
-    text: "NASA's Astronomy Picture of the Day, explained in Hebrew.",
-    needsLogin: true,
-  },
-  {
-    to: "/design",
-    title: "Responsive Design",
-    text: "The SPLASH landing page, built 1:1 from Figma for every screen size.",
-    needsLogin: false,
-  },
-] as const;
-
 /**
- * The home page. Replace all of this with your own app.
+ * The home page: three full-height panels, one per project, separated by
+ * diagonal lines. Each whole panel is a link to its project.
  *
- * Once you are logged in, it shows the two halves of the system talking to
- * each other: the browser knows who you are from Supabase, and /api/me
- * proves the SERVER agrees - it checked your token before answering.
+ * The diagonals get steeper as the screen narrows, and on phones the panels
+ * stack into three plain rectangles. All of that is in HomePage.module.css.
  */
 export default function HomePage() {
-  const { user } = useAuth();
-
-  const meQuery = useQuery({
-    queryKey: ["me"],
-    queryFn: () => api<Me>("/api/me"),
-    // Only ask once we know somebody is logged in.
-    enabled: Boolean(user),
-  });
-
   return (
-    <main>
-      <h2>Welcome to the Product Jam Starter Kit</h2>
-      <p>
-        Feel free to look around, edit the source code and navigate to the
-        demos. This page is client/pages/home/HomePage.tsx.
-      </p>
-
-      <div className={styles.logos}>
-        <img src="/huji.svg" alt="HUJI Logo" width="80" height="80" />
-        <img src="/bezalel.svg" alt="Bezalel Logo" width="80" height="80" />
-      </div>
-
-      {user ? (
-        <>
-          <p>
-            The server knows you as:{" "}
-            <strong>
-              {meQuery.isPending
-                ? "Checking..."
-                : meQuery.isError
-                  ? "Error"
-                  : meQuery.data.email}
-            </strong>
+    <main className={styles.home}>
+      <nav className={styles.panels} aria-label="Projects">
+        <Link
+          to="/tic-tac-toe"
+          className={`${styles.panel} ${styles.ticTacToe}`}
+        >
+          <PressShadow />
+          <h2 className={styles.title}>TiC-TAC-Toe</h2>
+          <p className={styles.text}>
+            Get nostalgic with a good o&apos; tick-tac-toe game
           </p>
-          <p>
-            <Link to="/events">My events</Link>
-          </p>
-        </>
-      ) : null}
+        </Link>
 
-      <h2>Projects</h2>
-      <nav aria-label="Projects">
-        <ul className={styles.projects}>
-          {PROJECTS.map((project) => (
-            <li key={project.to}>
-              <Link to={project.to} className={styles.project}>
-                <span className={styles.projectTitle}>{project.title}</span>
-                <span className={styles.projectText}>{project.text}</span>
-                <span className={styles.projectMeta}>
-                  {project.to}
-                  {project.needsLogin ? " · sign-in required" : ""}
-                </span>
-              </Link>
-            </li>
-          ))}
-        </ul>
+        <Link to="/nasa" className={`${styles.panel} ${styles.space}`}>
+          <PressShadow />
+          <h2 className={styles.title}>Space images</h2>
+          <p className={styles.text}>Get inspired with the vastnes of space</p>
+        </Link>
+
+        <Link to="/design" className={`${styles.panel} ${styles.design}`}>
+          <PressShadow />
+          <h2 className={styles.title}>Responsive design</h2>
+          <p className={styles.text}>
+            Get creative wit a <StretchyWord /> design
+          </p>
+        </Link>
       </nav>
     </main>
+  );
+}
+
+/*
+  The shadow along a panel's diagonal edges when it is pressed. It is a
+  black shape covering exactly what the diagonals cut off, blurred so the
+  dark bleeds in across the edge. See .press in HomePage.module.css.
+*/
+function PressShadow() {
+  return (
+    <span className={styles.press} aria-hidden="true">
+      <span />
+    </span>
+  );
+}
+
+/*
+  "ReSponSiVE" with each letter squeezed or stretched, as in the sketch.
+  The number is how wide that letter is drawn: below 1 is narrower, above 1
+  is wider. Screen readers get the plain word instead of single letters.
+*/
+const STRETCHY_LETTERS: [string, number][] = [
+  ["R", 1.45],
+  ["e", 0.6],
+  ["S", 0.7],
+  ["p", 1.35],
+  ["o", 1],
+  ["n", 0.6],
+  ["S", 1.4],
+  ["i", 0.6],
+  ["V", 1.35],
+  ["E", 1.5],
+];
+
+function StretchyWord() {
+  return (
+    <span className={styles.stretchy}>
+      <span className={styles.srOnly}>ReSponSiVE</span>
+      <span aria-hidden="true">
+        {STRETCHY_LETTERS.map(([letter, scale], i) => (
+          <span key={i} style={{ "--sx": scale } as CSSProperties}>
+            {letter}
+          </span>
+        ))}
+      </span>
+    </span>
   );
 }
