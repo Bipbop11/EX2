@@ -380,6 +380,6 @@ saving mechanisms (it's bad practice to leak backend details). So, I\
 changed the message to something simpler and safer: *"We're sorry,\
 Gemini's explanation didn't come out right. Please try again."*
 
-[q3]: screenshots/illegal_game_server_response.png
+[q3]: screenshots/game_server_response.png
 [q6]: screenshots/hacked_tag.png
 [q7]: screenshots/string_input.png
