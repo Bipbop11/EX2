@@ -1,4 +1,5 @@
 import { Hono } from "hono";
+import { HTTPException } from "hono/http-exception";
 import type { ApiError } from "@shared/index";
 import type { AppEnv } from "./env";
 import { fail } from "./lib/errors";
@@ -46,6 +47,24 @@ app.all("/api/*", (c) =>
 );
 
 app.onError((err, c) => {
+  /*
+    Some errors already know they are the caller's fault. The main one: a
+    body that is not valid JSON, which Hono rejects with a 400 before our
+    validation even runs. Answer those with their own status code, in our
+    usual error format, instead of turning them into a 500.
+  */
+  if (err instanceof HTTPException && err.status < 500) {
+    const badJson = /json/i.test(err.message);
+    return fail(
+      c,
+      err.status,
+      err.status === 400 ? "invalid_input" : "bad_request",
+      badJson
+        ? "The request body is not valid JSON."
+        : err.message || "The request could not be handled.",
+    );
+  }
+
   console.error(err);
   return fail(c, 500, "internal_error", "Something went wrong on the server.");
 });
